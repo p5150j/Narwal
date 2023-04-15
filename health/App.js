@@ -1,127 +1,124 @@
-import React, { useEffect, useState, useRef } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  StyleSheet,
-  useWindowDimensions,
-  Button,
-  TouchableOpacity,
-} from "react-native";
-import { db } from "./firebase";
-import { collection, onSnapshot } from "firebase/firestore";
-import HTML from "react-native-render-html";
-import { Video, ResizeMode } from "expo-av";
+import React, { useEffect, useState } from "react";
+import { View, Text } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
+import HomeScreen from "./HomeScreen";
+import FeedScreen from "./FeedScreen";
+import ForYouScreen from "./ForYouScreen";
+import SettingsScreen from "./SettingsScreen";
+import Icon from "react-native-vector-icons/Ionicons";
 
-const App = () => {
-  const [posts, setPosts] = useState([]);
+import { app, auth } from "./firebase";
 
-  const postsRef = collection(db, "posts");
-  const { width } = useWindowDimensions();
+import AuthScreen from "./AuthScreen";
+import LoginScreen from "./LoginScreen";
+import RegisterScreen from "./RegisterScreen";
 
-  const video = React.useRef(null);
-  const [status, setStatus] = React.useState({});
+const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef(null);
-
-  const handleVideoPress = () => {
-    console.log("videoRef", videoRef.current);
-    console.log("isPlaying", isPlaying);
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pauseAsync();
-      } else {
-        videoRef.current.playAsync();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
-  useEffect(() => {
-    const unsubscribe = onSnapshot(postsRef, (querySnapshot) => {
-      const postList = [];
-      querySnapshot.forEach((doc) => {
-        postList.push({ ...doc.data(), id: doc.id });
-      });
-      setPosts(postList);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  const renderItem = ({ item }) => (
-    <View style={styles.postContainer}>
-      <View style={styles.postInfo}>
-        <Text style={styles.postName}>{item.name}</Text>
-        {/* <Text style={styles.postDescription}>{item.description}</Text> */}
-        <HTML contentWidth={width} source={{ html: item.description }} />
-
-        {item.imageUrl && (
-          <Image
-            source={{ uri: item.imageUrl }}
-            style={styles.postImage}
-            resizeMode="contain"
-          />
-        )}
-
-        {item.videoUrl && (
-          <TouchableOpacity onPress={handleVideoPress}>
-            <Video
-              ref={videoRef}
-              source={{ uri: item.videoUrl }}
-              style={styles.postVideo}
-              resizeMode="contain"
-              useNativeControls={true}
-            />
-          </TouchableOpacity>
-        )}
-      </View>
-    </View>
-  );
-
+const HomeStack = () => {
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={posts}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }}
       />
-    </View>
+    </Stack.Navigator>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 60,
-  },
-  postContainer: {},
-  postInfo: {
-    flex: 1,
-  },
-  postName: {
-    fontWeight: "bold",
-    fontSize: 16,
-    marginBottom: 4,
-  },
-  postDescription: {
-    marginBottom: 8,
-  },
-  postImage: {
-    width: 400,
-    height: 400,
+const AuthStack = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Auth"
+        component={AuthScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ title: "Login" }}
+      />
+      <Stack.Screen
+        name="Register"
+        component={RegisterScreen}
+        options={{ title: "Register" }}
+      />
+    </Stack.Navigator>
+  );
+};
 
-    // resizeMode: "contain",
-    marginBottom: 8,
-  },
-  postVideo: {
-    width: 400,
-    height: 225,
-  },
-});
+const App = () => {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+
+  const authListener = () => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
+      setLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    authListener();
+  }, []);
+
+  if (loading) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      {user ? (
+        <Tab.Navigator
+          screenOptions={({ route }) => ({
+            tabBarIcon: ({ color, size }) => {
+              let iconName;
+
+              if (route.name === "Home") {
+                iconName = "home-outline";
+              } else if (route.name === "Feed") {
+                iconName = "newspaper-outline";
+              } else if (route.name === "ForYou") {
+                iconName = "heart-outline";
+              } else if (route.name === "Settings") {
+                iconName = "settings-outline";
+              }
+
+              return <Icon name={iconName} size={size} color={color} />;
+            },
+            tabBarActiveTintColor: "white",
+            tabBarInactiveTintColor: "gray",
+            tabBarStyle: {
+              backgroundColor: "rgba(0, 0, 0, 0.9)",
+              borderTopWidth: 0,
+              paddingTop: 10,
+            },
+            headerShown: false,
+          })}
+        >
+          <Tab.Screen name="Home" component={HomeStack} />
+          <Tab.Screen name="Feed" component={FeedScreen} />
+          <Tab.Screen name="ForYou" component={ForYouScreen} />
+          <Tab.Screen name="Settings" component={SettingsScreen} />
+        </Tab.Navigator>
+      ) : (
+        <AuthStack />
+      )}
+    </NavigationContainer>
+  );
+};
 
 export default App;
