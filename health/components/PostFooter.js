@@ -1,6 +1,5 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
-import HTML from "react-native-render-html";
 
 const PostFooter = ({ createdAt, description, contentWidth }) => {
   return (

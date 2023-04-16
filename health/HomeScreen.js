@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { db } from "./firebase";
 import { collection, onSnapshot } from "firebase/firestore";
-import Purchases from "react-native-purchases";
+// import Purchases from "react-native-purchases";
 import PostHeader from "./components/PostHeader";
 import PostImage from "./components/PostImage";
 import PostVideo from "./components/PostVideo";
@@ -37,17 +37,20 @@ const HomeScreen = () => {
     }
   };
 
-  const setupPurchases = async () => {
-    try {
-      await Purchases.setup("sk_OdEGBmHNqfqMfimPHzlkgHQTWFXvf");
-      console.log("Purchases SDK initialized successfully");
-    } catch (e) {
-      console.log("Error initializing Purchases SDK", e);
-    }
-  };
+  // const setupPurchases = async () => {
+  //   try {
+  //     await Purchases.setup("sk_OdEGBmHNqfqMfimPHzlkgHQTWFXvf");
+  //     console.log("Purchases SDK initialized successfully");
+  //   } catch (e) {
+  //     console.log("Error initializing Purchases SDK", e);
+  //   }
+  // };
+
+  // "react-native-purchases": "^3.0.0",
+  // "react-native-reanimated": "^3.0.2",
 
   useEffect(() => {
-    setupPurchases();
+    // setupPurchases();
     const unsubscribe = onSnapshot(postsRef, (querySnapshot) => {
       const postList = [];
       querySnapshot.forEach((doc) => {
