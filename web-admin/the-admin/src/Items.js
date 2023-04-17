@@ -123,24 +123,13 @@ function Items() {
                 </label>
                 <div class="mt-2">
                   <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                    <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-                      Post title
-                    </span>
                     <input
                       type="text"
-                      //   placeholder="Name"
+                      placeholder="Title"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     />
-                    {/* <input
-                      type="text"
-                      name="username"
-                      id="username"
-                      autocomplete="username"
-                      class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
-                      placeholder="janesmith"
-                    /> */}
                   </div>
                 </div>
                 <br />
@@ -152,13 +141,9 @@ function Items() {
                 </label>
                 <div class="mt-2">
                   <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
-                    <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">
-                      Post Description
-                    </span>
-
                     <input
                       type="text"
-                      //   placeholder="Description"
+                      placeholder="Description"
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       class="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
@@ -166,26 +151,12 @@ function Items() {
                   </div>
                 </div>
               </div>
-              {/* 
-              <input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <input
-                type="text"
-                placeholder="Description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              /> */}
-
               <div class="col-span-full">
                 <label
                   for="cover-photo"
                   class="block text-sm font-medium leading-6 text-gray-900"
                 >
-                  Cover photo
+                  Image upload
                 </label>
                 <div class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                   <div class="text-center">
@@ -224,51 +195,73 @@ function Items() {
                   </div>
                 </div>
               </div>
-
               {/* <input type="file" accept="image/*" onChange={handleImageUpload} /> */}
               <input
                 type="file"
                 accept="video/*"
                 onChange={handleVideoUpload}
               />
-              <button type="submit">Add Item</button>
+              <br /> <br /> <br /> <br />
             </div>
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              type="submit"
+            >
+              Add Item
+            </button>
           </div>
         </div>
       </form>
-      <ul>
-        {items
-          .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate())
-          .map((item) => (
-            <li key={item.id}>
-              <div style={{ width: 400 }}>
-                {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt={item.name}
-                    style={{ width: 400 }}
-                  />
-                )}
-                {item.videoUrl && (
-                  <video
-                    src={item.videoUrl}
-                    controls
-                    style={{ width: 400 }}
-                  ></video>
-                )}
-              </div>
-              <div>
-                <h2>{item.name}</h2>
-                <p>{item.description}</p>
-                <p>
-                  Created at: {item.createdAt.toDate().toLocaleDateString()}
-                </p>
-                <button onClick={() => handleEdit(item.id)}>Edit</button>
-                <button onClick={() => handleDelete(item.id)}>Delete</button>
-              </div>
-            </li>
-          ))}
-      </ul>
+
+      {items
+        .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate())
+        .map((item) => (
+          <div
+            class="max-w-sm rounded overflow-hidden shadow-lg"
+            key={item.id}
+            style={{ float: "right", margin: 10 }}
+          >
+            {item.imageUrl && (
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                style={{ width: 400 }}
+                class="w-full"
+              />
+            )}
+            {item.videoUrl && (
+              <video
+                src={item.videoUrl}
+                controls
+                style={{ width: 400 }}
+              ></video>
+            )}
+
+            <div class="px-6 py-4">
+              <div class="font-bold text-xl mb-2">{item.name}</div>
+              <p class="text-gray-700 text-base">{item.description}</p>
+            </div>
+            <div class="px-6 pt-4 pb-2">
+              <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                {item.createdAt.toDate().toLocaleDateString()}
+              </span>
+            </div>
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => handleEdit(item.id)}
+              style={{ margin: 10 }}
+            >
+              Edit
+            </button>
+            <button
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              onClick={() => handleDelete(item.id)}
+              style={{ margin: 10 }}
+            >
+              Delete
+            </button>
+          </div>
+        ))}
     </div>
   );
 }

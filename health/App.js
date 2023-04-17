@@ -7,6 +7,7 @@ import HomeScreen from "./HomeScreen";
 import FeedScreen from "./FeedScreen";
 import ForYouScreen from "./ForYouScreen";
 import SettingsScreen from "./SettingsScreen";
+import ForgotPasswordScreen from "./ForgotPasswordScreen";
 import Icon from "react-native-vector-icons/Ionicons";
 
 import { app, auth } from "./firebase";
@@ -48,6 +49,7 @@ const AuthStack = () => {
         component={RegisterScreen}
         options={{ title: "Register" }}
       />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );
 };

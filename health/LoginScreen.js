@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigation } from "@react-navigation/native";
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
+
+  const navigation = useNavigation(); // Navigation instance
 
   const handleLogin = async () => {
     try {
@@ -19,6 +22,12 @@ const LoginScreen = ({ navigation }) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleForgotPassword = () => {
+    // Navigate to ForgotPasswordScreen
+    console.log("Forgot Password button pressed");
+    navigation.navigate("ForgotPassword");
   };
 
   return (
@@ -42,6 +51,9 @@ const LoginScreen = ({ navigation }) => {
         onPress={handleLogin}
       >
         <Text style={{ color: "black" }}>Login</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={{ marginTop: 20 }}>Forgot Password?</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={{ marginTop: 20 }}>Don't have an account? Register</Text>
