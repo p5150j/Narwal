@@ -33,14 +33,12 @@ expo prebuild --platform ios
 
 
 ### Future Features needed:
-- landing page with login and signup 
-- auth logic and hide content if not logged in
+
 - user profiles
-- user posting from mobile 
 - follow users and feed logic (you will see them in your feed)
 - post comments 
 - post likes
-- tabs 
+
 
 
 

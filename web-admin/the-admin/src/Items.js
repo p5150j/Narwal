@@ -31,7 +31,7 @@ function Items() {
     setLoading(true);
     try {
       const itemRef = await addDoc(collection(db, "posts"), {
-        createdAt: new Date(),
+        createdAt: new Date().toISOString(),
         name,
         description,
       });
@@ -53,34 +53,6 @@ function Items() {
       setVideo(null);
     } catch (error) {
       console.error("Error adding item: ", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEdit = async (id) => {
-    setLoading(true);
-    try {
-      const itemRef = doc(db, "posts", id);
-      await updateDoc(itemRef, { name, description });
-      if (image) {
-        const storageRef = ref(storage, `images/${id}`);
-        await uploadBytes(storageRef, image);
-        const url = await getDownloadURL(storageRef);
-        await updateDoc(itemRef, { imageUrl: url });
-      }
-      if (video) {
-        const storageRef = ref(storage, `videos/${id}`);
-        await uploadBytes(storageRef, video);
-        const url = await getDownloadURL(storageRef);
-        await updateDoc(itemRef, { videoUrl: url });
-      }
-      setName("");
-      setDescription("");
-      setImage(null);
-      setVideo(null);
-    } catch (error) {
-      console.error("Error editing item: ", error);
     } finally {
       setLoading(false);
     }
@@ -214,7 +186,7 @@ function Items() {
       </form>
 
       {items
-        .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate())
+        // .sort((a, b) => b.createdAt.toDate() - a.createdAt.toDate())
         .map((item) => (
           <div
             class="max-w-sm rounded overflow-hidden shadow-lg"
@@ -243,16 +215,10 @@ function Items() {
             </div>
             <div class="px-6 pt-4 pb-2">
               <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                {item.createdAt.toDate().toLocaleDateString()}
+                {item.createdAt}
               </span>
             </div>
-            <button
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => handleEdit(item.id)}
-              style={{ margin: 10 }}
-            >
-              Edit
-            </button>
+
             <button
               class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               onClick={() => handleDelete(item.id)}

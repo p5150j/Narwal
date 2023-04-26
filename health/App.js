@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "./HomeScreen";
-import FeedScreen from "./FeedScreen";
-import ForYouScreen from "./ForYouScreen";
-import SettingsScreen from "./SettingsScreen";
-import ForgotPasswordScreen from "./ForgotPasswordScreen";
+import HomeScreen from "./screens/HomeScreen";
+import FeedScreen from "./screens/FeedScreen";
+import ForYouScreen from "./screens/ForYouScreen";
+import SettingsScreen from "./screens/SettingsScreen";
+import ProfileScreen from "./ProfileScreen";
+
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import Icon from "react-native-vector-icons/Ionicons";
-
 import { app, auth } from "./firebase";
+import AuthScreen from "./screens/AuthScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
+import MakePostScreen from "./screens/MakePostScreen";
 
-import AuthScreen from "./AuthScreen";
-import LoginScreen from "./LoginScreen";
-import RegisterScreen from "./RegisterScreen";
+import Constants from "expo-constants";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -42,12 +45,12 @@ const AuthStack = () => {
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        options={{ title: "Login" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Register"
         component={RegisterScreen}
-        options={{ title: "Register" }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
@@ -97,6 +100,12 @@ const App = () => {
                 iconName = "heart-outline";
               } else if (route.name === "Settings") {
                 iconName = "settings-outline";
+              } else if (route.name === "MakePost") {
+                // Add a new tab for "Make Post"
+                iconName = "create-outline";
+              } else if (route.name === "Profile") {
+                // Add a new tab for "Make Post"
+                iconName = "person-circle-outline";
               }
 
               return <Icon name={iconName} size={size} color={color} />;
@@ -106,15 +115,19 @@ const App = () => {
             tabBarStyle: {
               backgroundColor: "rgba(0, 0, 0, 0.9)",
               borderTopWidth: 0,
-              paddingTop: 10,
+              padding: 10,
+              height: 90,
             },
             headerShown: false,
+            tabBarShowLabel: false,
           })}
         >
           <Tab.Screen name="Home" component={HomeStack} />
           <Tab.Screen name="Feed" component={FeedScreen} />
+          <Tab.Screen name="MakePost" component={MakePostScreen} />
           <Tab.Screen name="ForYou" component={ForYouScreen} />
           <Tab.Screen name="Settings" component={SettingsScreen} />
+          <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
       ) : (
         <AuthStack />

@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import Video from "react-native-video";
 
 const AuthScreen = () => {
   const navigation = useNavigation();
@@ -15,7 +16,16 @@ const AuthScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to My Appzzz</Text>
+      <Video
+        source={{
+          uri: "https://arusimagesforsite.s3.us-west-2.amazonaws.com/dji_fly_20230320_161050_292_1679365586817_video.MP4",
+        }}
+        resizeMode="cover"
+        style={styles.backgroundVideo}
+        repeat
+        muted
+      />
+      <Text style={styles.title}>Welcome msg.... tagline logo etc</Text>
       <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
@@ -47,6 +57,14 @@ const styles = StyleSheet.create({
     // color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  backgroundVideo: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    opacity: 0.4,
   },
 });
 

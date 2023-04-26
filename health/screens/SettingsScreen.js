@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { auth } from "./firebase";
+import { auth } from "../firebase";
 
 const SettingsScreen = () => {
   const handleLogout = () => {
