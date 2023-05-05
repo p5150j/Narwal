@@ -40,6 +40,7 @@ const MakePostScreen = () => {
   const navigation = useNavigation();
   const [cameraType, setCameraType] = useState(RNCamera.Constants.Type.back);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const postContainerAnim = useRef(new Animated.Value(-screenHeight)).current;
 
   const handleRecordButtonPress = async () => {
     try {
@@ -58,12 +59,12 @@ const MakePostScreen = () => {
             setShowVideoPreview(true);
           })
           .catch((error) => {
-            // console.log("Failed to record video:", error);
+            console.log("Failed to record video:", error);
             setIsLoading(false);
           });
       }
     } catch (error) {
-      // console.log("Failed to record video:", error);
+      console.log("Failed to record video:", error);
       setIsLoading(false);
     }
   };
@@ -72,16 +73,16 @@ const MakePostScreen = () => {
     if (cameraRef.current && cameraRef.current.stopRecording) {
       cameraRef.current.stopRecording();
       setIsLoading(false);
-      // console.log("stopped");
+      console.log("stopped");
     }
   };
 
   const handlePostButtonPress = async () => {
     try {
       setIsLoading(true);
-      // console.log("videoUri:", videoUri);
-      // console.log("name:", name);
-      // console.log("description:", description);
+      console.log("videoUri:", videoUri);
+      console.log("name:", name);
+      console.log("description:", description);
       if (videoUri && name && description) {
         const downloadUrl = await uploadVideo(videoUri);
         await createPost(downloadUrl, name, description);
@@ -92,11 +93,11 @@ const MakePostScreen = () => {
         setShowVideoPreview(false);
         navigation.navigate("Home");
       } else {
-        // console.log("Video, name, or description is missing");
+        console.log("Video, name, or description is missing");
       }
     } catch (error) {
-      // console.log("Failed to upload post:", error);
-      // console.log("Video URI:", videoUri);
+      console.log("Failed to upload post:", error);
+      console.log("Video URI:", videoUri);
     } finally {
       setIsLoading(false);
     }
@@ -118,19 +119,19 @@ const MakePostScreen = () => {
       const progress =
         (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100;
       setUploadProgress(progress);
-      // console.log(
-      //   `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`
-      // );
+      console.log(
+        `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`
+      );
     });
 
     try {
       await task;
       const url = await getDownloadURL(reference);
-      // console.log("Video URL:", url);
+      console.log("Video URL:", url);
       setIsUploading(false);
       return url;
     } catch (error) {
-      // console.error("Failed to upload video:", error);
+      console.error("Failed to upload video:", error);
       setIsUploading(false);
       throw error;
     }
@@ -249,7 +250,7 @@ const MakePostScreen = () => {
         ) : (
           showFormOverlay && (
             <View style={styles.postContainer}>
-              <Text style={styles.inputLabel}>Name</Text>
+              {/* <Text style={styles.inputLabel}>Name</Text> */}
               <TextInput
                 style={styles.nameInput}
                 placeholder="Enter name"
@@ -257,7 +258,7 @@ const MakePostScreen = () => {
                 value={name}
                 onChangeText={(text) => setName(text)}
               />
-              <Text style={styles.inputLabel}>Description</Text>
+              {/* <Text style={styles.inputLabel}>Description</Text> */}
               <TextInput
                 style={styles.descriptionInput}
                 placeholder="Enter description"
@@ -269,7 +270,7 @@ const MakePostScreen = () => {
                 style={styles.postButton}
                 onPress={handlePostButtonPress}
               >
-                <Text style={styles.postButtonText}>Upload Post</Text>
+                <Text style={styles.postButtonText}>Upload Post 🚀</Text>
               </TouchableOpacity>
             </View>
           )
@@ -311,7 +312,7 @@ const styles = StyleSheet.create({
     bottom: 100,
     left: 0,
     right: 0,
-    padding: 16,
+    // padding: 16,
   },
   cameraControls: {
     flexDirection: "row",
@@ -328,9 +329,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   postContainer: {
-    marginBottom: 150,
-    backgroundColor: "#1e1e1e",
-    borderRadius: 8,
+    marginBottom: -100,
+    backgroundColor: "#3a3a3b",
+    borderRadius: 34,
     padding: 16,
   },
   inputLabel: {
@@ -338,34 +339,40 @@ const styles = StyleSheet.create({
     // fontWeight: "bold",
     fontSize: 16,
     marginBottom: 4,
+    padding: 15,
   },
   nameInput: {
     width: "100%",
     height: 40,
+    borderBottomWidth: 1,
     borderRadius: 8,
-    borderColor: "#bdbdbd",
-    borderWidth: 1,
+    borderColor: "#505051",
+    borderStyle: "solid",
     paddingHorizontal: 8,
     marginBottom: 12,
+    marginTop: 20,
     color: "#e9e9e9",
   },
   descriptionInput: {
     width: "100%",
     height: 100,
+    borderBottomWidth: 1,
     borderRadius: 8,
-    borderColor: "#bdbdbd",
-    borderWidth: 1,
+    borderColor: "#505051",
+    borderStyle: "solid",
     paddingHorizontal: 8,
     textAlignVertical: "top",
-    marginBottom: 16,
+    marginBottom: 0,
     color: "#e9e9e9",
   },
   postButton: {
     backgroundColor: "#252526",
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 34,
+    padding: 16,
     justifyContent: "center",
     alignItems: "center",
+    marginBottom: 120,
+    marginTop: 50,
   },
   postButtonText: {
     color: "#bdbdbd",

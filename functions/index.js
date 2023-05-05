@@ -1,5 +1,3 @@
-process.env.FIREBASE_CONFIG = JSON.stringify({});
-
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const language = require("@google-cloud/language");
@@ -7,7 +5,7 @@ const Perspective = require("perspective-api-client");
 
 const videoIntelligence = require("@google-cloud/video-intelligence");
 
-const serviceAccount = require("./myapp-80188-firebase-adminsdk-jcl37-4cebb18620.json");
+const serviceAccount = require("");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -16,7 +14,7 @@ admin.initializeApp({
 const db = admin.firestore();
 const languageClient = new language.LanguageServiceClient();
 const perspective = new Perspective({
-  apiKey: "AIzaSyDmKyh9Ps7D7yL-UTGH3c5qi4hBJWbuIck",
+  apiKey: "",
 });
 const videoIntelligenceClient =
   new videoIntelligence.VideoIntelligenceServiceClient();
