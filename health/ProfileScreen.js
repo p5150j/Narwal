@@ -33,6 +33,7 @@ const ProfileHeader = ({
   handleEdit,
   newHandle,
   setNewHandle,
+  showEditButton,
 }) => {
   return (
     <View>
@@ -61,7 +62,7 @@ const ProfileHeader = ({
   );
 };
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ route }) => {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newHandle, setNewHandle] = useState("");
@@ -70,7 +71,7 @@ const ProfileScreen = () => {
   const navigation = useNavigation();
   const auth = getAuth();
   const db = getFirestore();
-  const userId = auth.currentUser.uid;
+  const { userId } = route.params;
 
   useEffect(() => {
     const userRef = doc(db, "users", userId);
@@ -106,22 +107,24 @@ const ProfileScreen = () => {
   }, [db, userId]);
 
   const renderItem = ({ item }) => {
-    return (
-      <View style={styles.postContainer}>
-        <Image source={{ uri: item.videoUrl }} style={styles.postImage} />
+    const handlePress = () => {
+      navigation.navigate("VideoDetail", { video: item, userId: userId });
+    };
 
+    return (
+      <TouchableOpacity onPress={handlePress} style={styles.postContainer}>
+        <Image source={{ uri: item.videoUrl }} style={styles.postImage} />
         <Video
           source={{
             uri: item.videoUrl,
           }}
           resizeMode="cover"
           style={styles.postImage}
-          repeat
           muted
+          paused={true}
         />
-
         {/* Add more post details here */}
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -143,7 +146,7 @@ const ProfileScreen = () => {
   return (
     <>
       <TouchableOpacity style={styles.logout} onPress={handleLogout}>
-        <Icon name="settings-outline" size={30} color="gray" />
+        <Icon name="settings-outline" size={30} color="white" />
       </TouchableOpacity>
 
       <View style={styles.container}>
@@ -160,6 +163,8 @@ const ProfileScreen = () => {
           keyExtractor={(item) => item.id}
           numColumns={2}
           columnWrapperStyle={styles.postColumn}
+          initialNumToRender={2}
+          maxToRenderPerBatch={2}
         />
       </View>
     </>
@@ -168,12 +173,13 @@ const ProfileScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 60,
     flex: 1,
     alignItems: "center",
+    backgroundColor: "#252526",
   },
   profileHeader: {
     marginBottom: -150,
+    marginTop: 60,
     alignItems: "center",
   },
   profileImage: {
@@ -185,10 +191,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginTop: 10,
+    color: "#e9e9e9",
   },
   profileHandle: {
     fontSize: 16,
-    color: "gray",
+    color: "#e9e9e9",
   },
   //   handleInput: {
   //     padding: 10,
@@ -215,8 +222,9 @@ const styles = StyleSheet.create({
   },
   logout: {
     position: "absolute",
-    top: 40,
-    right: 20,
+    top: 60,
+    right: 30,
+    zIndex: 99999,
   },
 });
 

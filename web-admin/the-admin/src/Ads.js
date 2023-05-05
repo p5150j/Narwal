@@ -10,7 +10,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "./firebase";
 
-function Items() {
+function Ads() {
   const [items, setItems] = useState([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -20,7 +20,7 @@ function Items() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      const data = await getDocs(collection(db, "posts"));
+      const data = await getDocs(collection(db, "advertisements"));
       setItems(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     fetchItems();
@@ -30,7 +30,7 @@ function Items() {
     e.preventDefault();
     setLoading(true);
     try {
-      const itemRef = await addDoc(collection(db, "posts"), {
+      const itemRef = await addDoc(collection(db, "advertisements"), {
         createdAt: new Date().toISOString(),
         name,
         description,
@@ -39,13 +39,17 @@ function Items() {
         const storageRef = ref(storage, `images/${itemRef.id}`);
         await uploadBytes(storageRef, image);
         const url = await getDownloadURL(storageRef);
-        await updateDoc(doc(db, "posts", itemRef.id), { imageUrl: url });
+        await updateDoc(doc(db, "advertisements", itemRef.id), {
+          imageUrl: url,
+        });
       }
       if (video) {
         const storageRef = ref(storage, `videos/${itemRef.id}`);
         await uploadBytes(storageRef, video);
         const url = await getDownloadURL(storageRef);
-        await updateDoc(doc(db, "posts", itemRef.id), { videoUrl: url });
+        await updateDoc(doc(db, "advertisements", itemRef.id), {
+          videoUrl: url,
+        });
       }
       setName("");
       setDescription("");
@@ -61,7 +65,7 @@ function Items() {
   const handleDelete = async (id) => {
     setLoading(true);
     try {
-      await deleteDoc(doc(db, "posts", id));
+      await deleteDoc(doc(db, "advertisements", id));
     } catch (error) {
       console.error("Error deleting item: ", error);
     } finally {
@@ -81,7 +85,7 @@ function Items() {
   return (
     <div>
       {loading && <div style={{ fontSize: 100, color: "red" }}>Loading...</div>}
-      <h1>Items</h1>
+      <h1>advertisements</h1>
       <form onSubmit={handleSubmit}>
         <div class="space-y-12">
           <div class="border-b border-gray-900/10 pb-12">
@@ -232,4 +236,4 @@ function Items() {
   );
 }
 
-export default Items;
+export default Ads;

@@ -60,3 +60,14 @@ Google play:
 Apple: 
 - https://appstoreconnect.apple.com/apps/6447605777/testflight/ios
 
+
+https://arus.freshdesk.com/support/home
+https://arus.freshdesk.com/a/dashboard/default
+
+
+https://extensions.dev/extensions/jigsaw/firestore-perspective-toxicity
+
+
+
+
+

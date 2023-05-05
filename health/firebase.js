@@ -17,4 +17,8 @@ const db = getFirestore(app);
 const storage = getStorage(app);
 const auth = getAuth(app);
 
-export { app, db, storage, auth };
+const getStorageInstance = () => {
+  return getStorage(app);
+};
+
+export { app, db, storage, auth, getStorageInstance };

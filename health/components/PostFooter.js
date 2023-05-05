@@ -13,6 +13,7 @@ const PostFooter = ({ createdAt, description, contentWidth, title }) => {
 
 const styles = StyleSheet.create({
   postFooter: {
+    width: 300,
     padding: 10,
     position: "absolute",
     bottom: 30,
