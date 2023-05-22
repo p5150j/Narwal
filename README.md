@@ -1,7 +1,13 @@
 
 # N*-arwal app ©️ 
+<div style="float: left; padding: 10px;">
+<img src="1output_trimmed_enhanced.gif"  height="400"/>
+<img src="2output_trimmed_enhanced.gif" height="400"/>
+<img src="3output_trimmed_enhanced.gif" height="400"/>
+<img src="4output_trimmed_enhanced.gif" height="400"/>
+</div>
 
-<!-- <img src="1output_trimmed_enhanced.gif"  width="600" height="300"/> -->
+
 
 ## Introduction
 
