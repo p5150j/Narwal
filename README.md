@@ -1,10 +1,10 @@
 
 # N*-arwal app ©️ 
 <div style="float: left; padding: 10px;">
-<img src="1output_trimmed_enhanced.gif"  height="500"/>
-<img src="2output_trimmed_enhanced.gif" height="500"/>
-<img src="3output_trimmed_enhanced.gif" height="500"/>
-<img src="4output_trimmed_enhanced.gif" height="500"/>
+<img src="1output_trimmed_enhanced.gif"  height="420"/>
+<img src="2output_trimmed_enhanced.gif" height="420"/>
+<img src="3output_trimmed_enhanced.gif" height="420"/>
+<img src="4output_trimmed_enhanced.gif" height="420"/>
 </div>
 
 
