@@ -5,11 +5,12 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
 const VideoDetailScreen = ({ route }) => {
-  const { video, userId } = route.params;
+  const { video, post } = route.params;
+  const selectedPost = post || video;
   const navigation = useNavigation();
 
   const handleBackButton = () => {
-    navigation.navigate("Profile", { userId: userId });
+    navigation.goBack();
   };
 
   return (
@@ -19,15 +20,15 @@ const VideoDetailScreen = ({ route }) => {
       </TouchableOpacity>
       <Video
         source={{
-          uri: video.videoUrl,
+          uri: selectedPost.videoUrl,
         }}
         resizeMode="cover"
         style={styles.video}
         repeat
         muted
       />
-      <Text style={styles.title}>{video.name}</Text>
-      <Text style={styles.description}>{video.description}</Text>
+      <Text style={styles.title}>{selectedPost.name}</Text>
+      <Text style={styles.description}>{selectedPost.description}</Text>
     </View>
   );
 };
@@ -39,14 +40,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backButton: {
+    backgroundColor: "#252526",
+    borderRadius: 40,
+    padding: 24,
+    zIndex: 99,
     position: "absolute",
-    top: 60,
-    left: 30,
-    zIndex: 99999,
+    top: 80, // Adjust the value according to your preference
+    left: 20, // Adjust the value according to your preference
   },
   video: {
     width: "100%",
-    height: 300,
+    height: "100%",
+    opacity: 0.8,
   },
   title: {
     fontSize: 24,

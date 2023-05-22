@@ -6,8 +6,12 @@ import {
   useWindowDimensions,
   Dimensions,
   ActivityIndicator,
+  Modal,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  Text,
 } from "react-native";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import {
   collection,
   onSnapshot,
@@ -15,6 +19,8 @@ import {
   getDocs,
   orderBy,
   where,
+  getDoc,
+  doc,
 } from "firebase/firestore";
 import PostHeader from "../components/PostHeader";
 import AdOverlay from "../components/AdOverlay";
@@ -26,14 +32,78 @@ import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import HapticFeedback from "react-native-haptic-feedback";
 import ActionBar from "../components/ActionBar";
 import BlurryContainer from "../components/BlurryContainer";
+import Comments from "../components/Comments";
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
   // const postsRef = collection(db, "posts");
   const postsQuery = query(
     collection(db, "posts"),
     orderBy("createdAt", "desc")
   );
+
+  // const postsQuery = query(
+  //   collection(db, "posts"),
+  //   orderBy("likesCount", "asc")
+  // );
+
+  const [followedUsers, setFollowedUsers] = useState([]);
+  const currentUser = auth.currentUser;
+
+  const fetchFollowedUsers = async () => {
+    const userId = auth.currentUser ? auth.currentUser.uid : "";
+    const followingsRef = collection(db, "users", userId, "Followings");
+    const followingsSnapshot = await getDocs(followingsRef);
+    const users = followingsSnapshot.docs.map((doc) => doc.id);
+    // console.log(users);
+
+    setFollowedUsers(users);
+    fetchFeedVideos(users);
+  };
+
+  const [feedVideos, setFeedVideos] = useState([]);
+  const fetchFeedVideos = async (followedUsers) => {
+    // console.log("fetchFeedVideos called with:", followedUsers);
+    const FollowedPosts = [];
+
+    for (const userId of followedUsers) {
+      const userPostsRef = collection(db, "posts");
+      const q = query(userPostsRef, where("uid", "==", userId));
+
+      const userPostsSnapshot = await getDocs(q);
+
+      const userDoc = await getDoc(doc(db, "users", userId));
+      const userData = userDoc.data();
+
+      // userPostsSnapshot.docs.forEach((doc) => {
+      //   const postData = { id: doc.id, ...doc.data() };
+      //   // console.log("Post Data:", postData);
+      //   FollowedPosts.push(postData);
+      // });
+
+      userPostsSnapshot.docs.forEach((doc) => {
+        const postData = { id: doc.id, ...doc.data(), user: userData };
+        FollowedPosts.push(postData);
+      });
+    }
+
+    // console.log("All Followed posts:", FollowedPosts);
+    if (FollowedPosts.length > 0 && ads.length > 0) {
+      setFeedVideos(prepareDataWithAds(FollowedPosts, ads));
+    } else {
+      setFeedVideos(FollowedPosts);
+    }
+  };
+
+  useEffect(() => {
+    fetchFollowedUsers();
+  }, []);
+
+  const [isFollowingFeed, setIsFollowingFeed] = useState(true);
+
+  const handleFeedSwitch = () => {
+    setIsFollowingFeed((prevState) => !prevState);
+  };
 
   const { width, height } = useWindowDimensions();
   const [viewableItems, setViewableItems] = useState([]);
@@ -44,6 +114,12 @@ const HomeScreen = () => {
   const [adPlaying, setAdPlaying] = useState(false);
   const [dataWithAds, setDataWithAds] = useState([]);
   const [adPlayedIds, setAdPlayedIds] = useState([]);
+
+  const [selectedPost, setSelectedPost] = useState(null);
+
+  const handleCommentPress = (postId) => {
+    setSelectedPost(postId);
+  };
 
   const enableScrolling = () => {
     if (flatListRef.current) {
@@ -63,7 +139,8 @@ const HomeScreen = () => {
       enableVibrateFallback: true,
       ignoreAndroidSystemSettings: false,
     };
-    HapticFeedback.trigger("rigid", options);
+
+    HapticFeedback.trigger("impactLight");
   };
 
   const prepareDataWithAds = (data, ads) => {
@@ -80,11 +157,15 @@ const HomeScreen = () => {
 
   useEffect(() => {
     setupPurchases();
-    const unsubscribe = onSnapshot(postsQuery, (querySnapshot) => {
+    const unsubscribe = onSnapshot(postsQuery, async (querySnapshot) => {
       const postList = [];
-      querySnapshot.forEach((doc) => {
-        postList.push({ ...doc.data(), id: doc.id });
-      });
+      for (const docSnapshot of querySnapshot.docs) {
+        const postData = docSnapshot.data();
+        const userDocRef = doc(db, "users", postData.uid);
+        const userDocSnapshot = await getDoc(userDocRef);
+        const userData = userDocSnapshot.data();
+        postList.push({ id: docSnapshot.id, ...postData, user: userData });
+      }
       setPosts(postList);
     });
 
@@ -103,7 +184,7 @@ const HomeScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (posts.length > 0 && ads.length > 0) {
+    if (posts && ads && posts.length > 0 && ads.length > 0) {
       setDataWithAds(prepareDataWithAds(posts, ads));
     } else {
       setDataWithAds(posts);
@@ -180,6 +261,8 @@ const HomeScreen = () => {
   };
 
   const renderItem = ({ item, index }) => {
+    // console.log("Item:", item);
+
     const isInView = viewableItems.includes(item.id);
     const isAd = item.isAd;
 
@@ -219,10 +302,12 @@ const HomeScreen = () => {
             title={item.name}
           />
           <ActionBar
-            avatarUrl="https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50"
-            // onCommentPress={() => console.log("Comment Pressed")}
-            // onLikePress={() => console.log("Like Pressed")}
-            // onAvatarPress={() => console.log("Avatar Pressed")}
+            avatarUrl={item.user.profileImageUrl}
+            onCommentPress={() => handleCommentPress(item.id)}
+            postId={item.id}
+            userId={currentUser.uid}
+            navigation={navigation}
+            authorId={item.uid}
           />
           <BlurryContainer
             item={item}
@@ -256,8 +341,28 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={[
+            styles.headerButton,
+            isFollowingFeed ? styles.headerButtonActive : {},
+          ]}
+          onPress={handleFeedSwitch}
+        >
+          <Text style={styles.headerButtonText}>Curated</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.headerButton,
+            !isFollowingFeed ? styles.headerButtonActive : {},
+          ]}
+          onPress={handleFeedSwitch}
+        >
+          <Text style={styles.headerButtonText}>Discover</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
-        data={dataWithAds}
+        data={isFollowingFeed ? feedVideos : dataWithAds}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
@@ -272,6 +377,18 @@ const HomeScreen = () => {
         maxToRenderPerBatch={10}
         // keyExtractor={(item) => item.id}
       />
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={selectedPost !== null}
+        onRequestClose={() => setSelectedPost(null)}
+      >
+        <TouchableWithoutFeedback onPress={() => setSelectedPost(null)}>
+          <View style={styles.modalOverlay} />
+        </TouchableWithoutFeedback>
+        <Comments postId={selectedPost} />
+      </Modal>
     </View>
   );
 };
@@ -301,6 +418,35 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.8)",
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  header: {
+    marginTop: 50,
+    zIndex: 999999,
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 10,
+  },
+
+  headerButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 5,
+  },
+  headerButtonActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: "#FFF",
+  },
+  headerButtonText: {
+    color: "#FFF",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });
 

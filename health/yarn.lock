@@ -6366,6 +6366,11 @@
   "resolved" "https://registry.npmjs.org/react-native-haptic-feedback/-/react-native-haptic-feedback-2.0.3.tgz"
   "version" "2.0.3"
 
+"react-native-image-picker@^5.3.1":
+  "integrity" "sha512-zRCjtlE3KOeaWDM8gXzTwXfvo3ZeF2XMkHceU7CVCtKRleKxna/E4XWIPu/lXO2qlMdnSx1WvfPSbqzAX0qxpA=="
+  "resolved" "https://registry.npmjs.org/react-native-image-picker/-/react-native-image-picker-5.3.1.tgz"
+  "version" "5.3.1"
+
 "react-native-linear-gradient@^2.6.2":
   "integrity" "sha512-Z8Xxvupsex+9BBFoSYS87bilNPWcRfRsGC0cpJk72Nxb5p2nEkGSBv73xZbEHnW2mUFvP+huYxrVvjZkr/gRjQ=="
   "resolved" "https://registry.npmjs.org/react-native-linear-gradient/-/react-native-linear-gradient-2.6.2.tgz"

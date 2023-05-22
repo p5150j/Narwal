@@ -1,10 +1,11 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 
-const PostFooter = ({ createdAt, description, contentWidth, title }) => {
+const PostFooter = ({ createdAt, description, contentWidth, title, uid }) => {
   return (
     <View style={styles.postFooter}>
       <Text style={styles.captionHeader}>{title}</Text>
+      {/* <Text style={styles.caption}> {uid}</Text> */}
       <Text style={styles.date}> {createdAt}</Text>
       <Text style={styles.caption}> {description}</Text>
     </View>

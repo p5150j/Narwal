@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useState, useCallback, memo } from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "./screens/HomeScreen";
-import ProfileScreen from "./ProfileScreen";
-import SearchHeader from "./SearchHeader";
-
-import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import Icon from "react-native-vector-icons/Ionicons";
-import { app, auth } from "./firebase";
+import { auth } from "./firebase";
+import HomeScreen from "./screens/HomeScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+import SearchHeader from "./SearchHeader";
+import ForgotPasswordScreen from "./screens/ForgotPasswordScreen";
 import AuthScreen from "./screens/AuthScreen";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
@@ -17,28 +16,15 @@ import MakePostScreen from "./screens/MakePostScreen";
 import UserListScreen from "./screens/UserListScreen";
 import VideoDetailScreen from "./screens/VideoDetailScreen";
 
-import Constants from "expo-constants";
-
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const MainAppTab = ({ userId }) => {
+const MainAppTab = memo(({ userId }) => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarShowLabel: false,
-        tabBarStyle: {
-          position: "absolute",
-          bottom: 25,
-          left: 20,
-          right: 20,
-          elevation: 0,
-          backgroundColor: "#1e1e1e",
-          borderRadius: 15,
-          borderTopWidth: 0,
-          height: 90,
-          justifyContent: "center",
-        },
+        tabBarStyle: styles.tabBarStyle,
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
@@ -51,13 +37,7 @@ const MainAppTab = ({ userId }) => {
           }
 
           return (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: 15,
-              }}
-            >
+            <View style={styles.iconContainer}>
               <Icon name={iconName} size={size} color={color} />
             </View>
           );
@@ -84,11 +64,20 @@ const MainAppTab = ({ userId }) => {
         options={{ headerShown: false }}
         initialParams={{ userId: userId }}
       />
+      <Tab.Screen
+        name="OtherProfile"
+        component={ProfileScreen}
+        options={{
+          headerShown: false,
+          tabBarButton: () => null,
+        }}
+        initialParams={{ userId: userId }}
+      />
     </Tab.Navigator>
   );
-};
+});
 
-const MainAppStack = ({ userId }) => {
+const MainAppStack = memo(({ userId }) => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -111,9 +100,9 @@ const MainAppStack = ({ userId }) => {
       />
     </Stack.Navigator>
   );
-};
+});
 
-const AuthStack = () => {
+const AuthStack = memo(() => {
   return (
     <Stack.Navigator>
       <Stack.Screen
@@ -134,31 +123,37 @@ const AuthStack = () => {
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );
-};
+});
 
 const App = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  const authListener = () => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUser(user);
-      } else {
-        setUser(null);
+  const authListener = useCallback(() => {
+    const unsubscribe = auth.onAuthStateChanged(
+      (user) => {
+        setUser(user || null);
+        setLoading(false);
+      },
+      (error) => {
+        console.error(error);
+        // handle error...
       }
-      setLoading(false);
-    });
-  };
+    );
+
+    return unsubscribe; // returning the unsubscribe function
+  }, []); // useCallback to create the listener only once
 
   useEffect(() => {
-    authListener();
-  }, []);
+    const unsubscribe = authListener(); // calling the function to start listening
+    return () => unsubscribe(); // calling the returned function to stop listening
+  }, [authListener]); // passing the function as a dependency
 
   if (loading) {
+    // using ActivityIndicator instead of Text
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   }
@@ -169,5 +164,30 @@ const App = () => {
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 15,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  tabBarStyle: {
+    position: "absolute",
+    bottom: 25,
+    left: 20,
+    right: 20,
+    elevation: 0,
+    backgroundColor: "#1e1e1e",
+    borderRadius: 15,
+    borderTopWidth: 0,
+    height: 90,
+    justifyContent: "center",
+  },
+});
 
 export default App;

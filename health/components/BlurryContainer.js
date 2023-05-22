@@ -13,7 +13,7 @@ const BlurryContainer = ({ item, onPress }) => {
   const shouldBlur =
     inappropriate ||
     inappropriateVideo === "POSSIBLE" ||
-    inappropriateVideo === "LIKELY" ||
+    // inappropriateVideo === "LIKELY" ||
     inappropriateVideo === "VERY_LIKELY";
 
   if (!shouldBlur) return null;

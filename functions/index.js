@@ -1,11 +1,14 @@
+process.env.FIREBASE_CONFIG = JSON.stringify({
+  databaseURL: "",
+  storageBucket: "",
+  projectId: "",
+});
+
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const language = require("@google-cloud/language");
 const Perspective = require("perspective-api-client");
-
 const videoIntelligence = require("@google-cloud/video-intelligence");
-
-const serviceAccount = require("");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -27,6 +30,40 @@ const likelihoods = [
   "LIKELY",
   "VERY_LIKELY",
 ];
+
+exports.moderatePostComments = functions.firestore
+  .document("posts/{postId}/comments/{commentId}")
+  .onCreate(async (snapshot, context) => {
+    const comment = snapshot.data();
+    console.log("Comment data:", comment);
+    const text = comment.text;
+
+    if (!text || text.trim() === "") {
+      console.log("Empty comment, skipping moderation.");
+      return null;
+    }
+
+    console.log("Comment to analyze:", text);
+
+    // Check for inappropriate content using Perspective API
+    const perspectiveResult = await perspective.analyze({
+      comment: { text: text },
+      requestedAttributes: { TOXICITY: {} },
+    });
+
+    const toxicity =
+      perspectiveResult.attributeScores.TOXICITY.summaryScore.value;
+
+    // Set a threshold to determine if the content is inappropriate
+    const toxicityThreshold = 0.7;
+
+    if (toxicity >= toxicityThreshold) {
+      console.log("Comment flagged as inappropriate");
+      await snapshot.ref.delete();
+    } else {
+      console.log("Comment flagged as appropriate");
+    }
+  });
 
 exports.moderatePost = functions
   .runWith({ timeoutSeconds: 540 })
@@ -85,29 +122,25 @@ exports.moderatePost = functions
 
     if (post.videoUrl) {
       console.log("Starting video analysis for post:", context.params.postId);
-      const explicitContentResults = await analyzeVideo(post.videoUrl);
 
-      // Get video URL from the post
-      const videoUrl = post.videoUrl;
+      try {
+        // Get video URL from the post
+        const videoUrl = post.videoUrl;
 
-      if (videoUrl) {
-        try {
+        if (videoUrl) {
           console.log("Video to analyze:", videoUrl);
           // Analyze the video for explicit content
-          const explicitContentResults = await analyzeVideo(videoUrl);
+          const explicitContentResults = await analyzeVideo(videoUrl, snapshot);
 
           // Set a threshold to determine if the content is inappropriate
           const explicitContentThreshold = 3; // Adjust this value as needed
-
           let maxLikelihood = 0;
-
           // Iterate through explicit content results and check if any of them exceed the threshold
           for (const result of explicitContentResults) {
             if (result.pornographyLikelihood > maxLikelihood) {
               maxLikelihood = result.pornographyLikelihood;
             }
           }
-
           const likelihoodString = likelihoods[maxLikelihood];
           // Flag the video content as inappropriate or appropriate
           if (maxLikelihood >= explicitContentThreshold) {
@@ -119,13 +152,14 @@ exports.moderatePost = functions
             post.inappropriateVideo = likelihoodString;
             await snapshot.ref.update({ inappropriateVideo: likelihoodString });
           }
-        } catch (error) {
-          console.error("Error in Video Intelligence API:", error);
         }
+      } catch (error) {
+        console.error("Error in Video Intelligence API:", error);
       }
     } else {
       console.log("No video URL for post:", context.params.postId);
-    } // If either text or video content is flagged as inappropriate, delete the post
+    }
+    // If either text or video content is flagged as inappropriate, delete the post
     if (
       post.inappropriate ||
       post.inappropriateVideo === "LIKELY" ||
@@ -136,9 +170,8 @@ exports.moderatePost = functions
     }
   });
 
-async function analyzeVideo(videoUrl) {
+async function analyzeVideo(videoUrl, snapshot) {
   const decodedVideoUrl = decodeURIComponent(videoUrl);
-
   const videoUri = decodedVideoUrl
     .replace(
       "https://firebasestorage.googleapis.com/v0/b/myapp-80188.appspot.com/o/",
@@ -149,7 +182,7 @@ async function analyzeVideo(videoUrl) {
   console.log(videoUri);
   const [operation] = await videoIntelligenceClient.annotateVideo({
     inputUri: videoUri,
-    features: ["EXPLICIT_CONTENT_DETECTION"],
+    features: ["EXPLICIT_CONTENT_DETECTION", "LABEL_DETECTION"],
   });
 
   console.log("Video analysis operation started:", operation.name);
@@ -158,5 +191,23 @@ async function analyzeVideo(videoUrl) {
   const explicitContentResults =
     results[0].annotationResults[0].explicitAnnotation.frames;
   console.log("Explicit content results:", explicitContentResults);
+
+  const labelAnnotations =
+    results[0].annotationResults[0].segmentLabelAnnotations;
+  console.log("Label annotations:", labelAnnotations);
+
+  await processLabelAnnotations(labelAnnotations, snapshot);
+
   return explicitContentResults;
+}
+
+async function processLabelAnnotations(labelAnnotations, snapshot) {
+  const labels = labelAnnotations.map((annotation) => {
+    return {
+      description: annotation.entity.description,
+      confidence: annotation.segments[0].confidence,
+    };
+  });
+  console.log("Processed labels:", labels);
+  await snapshot.ref.update({ labels: labels });
 }

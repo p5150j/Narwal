@@ -16,11 +16,20 @@ import {
   orderBy,
 } from "firebase/firestore";
 import Video from "react-native-video";
+import Icon from "react-native-vector-icons/Ionicons"; // Add this import
 
 const UserListScreen = ({ navigation }) => {
+  const renderDivider = () => {
+    if (searchText !== "" && filteredPosts.length > 0) {
+      return <View style={styles.divider} />;
+    }
+    return null;
+  };
+
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredPosts, setFilteredPosts] = useState([]);
   const [posts, setPosts] = useState([]);
 
   const db = getFirestore();
@@ -42,13 +51,6 @@ const UserListScreen = ({ navigation }) => {
   }, [db]);
 
   useEffect(() => {
-    const filtered = users.filter((user) =>
-      user.handle.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilteredUsers(filtered);
-  }, [searchText, users]);
-
-  useEffect(() => {
     const postsRef = collection(db, "posts");
     const postsQuery = query(postsRef, orderBy("name"));
     const unsubscribe = onSnapshot(postsQuery, (querySnapshot) => {
@@ -64,66 +66,100 @@ const UserListScreen = ({ navigation }) => {
     };
   }, [db]);
 
+  useEffect(() => {
+    const filteredUserResults = users.filter((user) =>
+      user.handle.toLowerCase().includes(searchText.toLowerCase())
+    );
+    setFilteredUsers(filteredUserResults);
+
+    const filteredPostResults = posts.filter(
+      (post) =>
+        post.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        post.description.toLowerCase().includes(searchText.toLowerCase()) ||
+        (Array.isArray(post.labels) &&
+          post.labels.some((label) =>
+            label.description.toLowerCase().includes(searchText.toLowerCase())
+          ))
+    );
+    setFilteredPosts(filteredPostResults);
+  }, [searchText, users, posts]);
+
   const renderItem = ({ item }) => {
+    if (item.type === "user") {
+      return renderUser(item);
+    } else if (item.type === "post") {
+      return renderPost(item);
+    }
+  };
+
+  const renderUser = (item) => {
     return (
       <TouchableOpacity
         style={styles.userContainer}
-        onPress={() => navigation.navigate("Profile", { userId: item.id })}
+        onPress={() => navigation.navigate("OtherProfile", { userId: item.id })}
       >
         <Image
           source={{ uri: item.profileImageUrl }}
           style={styles.profileImage}
         />
         <View style={styles.userInfo}>
-          {/* <Text style={styles.name}>{item.name}</Text> */}
           <Text style={styles.handle}>@{item.handle}</Text>
         </View>
       </TouchableOpacity>
     );
   };
 
-  const renderPostItem = ({ item }) => {
+  const renderPost = (item) => {
     return (
-      <View style={styles.postContainer}>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Profile", { userId: item.uid })}
-        >
-          <Video
-            source={{
-              uri: item.videoUrl,
-            }}
-            resizeMode="cover"
-            style={styles.postVideo}
-            muted
-            paused={true}
-          />
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.postContainer}
+        onPress={() => navigation.navigate("VideoDetail", { post: item })}
+      >
+        <Video
+          source={{
+            uri: item.videoUrl,
+          }}
+          resizeMode="cover"
+          style={styles.postVideo}
+          muted
+          paused={true}
+        />
+        <Text style={styles.postName}>{item.name}</Text>
+      </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        onPress={() => navigation.goBack()} // Replace this with your desired action
+        style={{
+          position: "absolute",
+          top: 60,
+          right: 30,
+          zIndex: 999,
+        }}
+      >
+        <Icon name="close" size={30} color="#fff" />
+      </TouchableOpacity>
       <Text style={styles.trendingText}>Discover</Text>
-      <FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        data={posts}
-        renderItem={renderPostItem}
-        keyExtractor={(item) => item.id}
-        style={styles.postList}
-      />
       <TextInput
         style={styles.searchInput}
-        placeholder="Search users"
+        placeholder="Search users and posts"
         placeholderTextColor="#7c7c7c"
         value={searchText}
         onChangeText={setSearchText}
       />
       <FlatList
-        data={filteredUsers}
+        data={[
+          ...filteredUsers.map((u) => ({ ...u, type: "user" })),
+          ...(searchText !== ""
+            ? filteredPosts.map((p) => ({ ...p, type: "post" }))
+            : []),
+        ]}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
+        ListHeaderComponent={renderDivider}
       />
     </View>
   );
@@ -131,8 +167,8 @@ const UserListScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 0, // Change this value to 0
-    paddingTop: 50, // Add this line
+    marginTop: 0,
+    paddingTop: 50,
     flex: 1,
     backgroundColor: "#252526",
   },
@@ -142,22 +178,6 @@ const styles = StyleSheet.create({
     color: "#e9e9e9",
     paddingLeft: 10,
     paddingTop: 10,
-  },
-  postList: {
-    paddingHorizontal: 10,
-    marginBottom: -400,
-  },
-  postContainer: {
-    width: 250,
-    height: 150,
-    marginRight: 10,
-    marginTop: 10,
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  postVideo: {
-    width: "100%",
-    height: "100%",
   },
   searchInput: {
     paddingHorizontal: 10,
@@ -183,14 +203,33 @@ const styles = StyleSheet.create({
   userInfo: {
     justifyContent: "center",
   },
-  name: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#e9e9e9",
-  },
   handle: {
     fontSize: 14,
     color: "#7c7c7c",
+  },
+  postContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: "#505051",
+  },
+  postVideo: {
+    width: 50,
+    height: 50,
+    borderRadius: 8,
+  },
+  postName: {
+    fontSize: 14,
+    color: "#7c7c7c",
+    marginLeft: 10,
+  },
+
+  divider: {
+    height: 1,
+    backgroundColor: "#7c7c7c",
+    marginHorizontal: 10,
+    marginVertical: 5,
   },
 });
 

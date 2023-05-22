@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  ImageBackground,
+  Animated,
 } from "react-native";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import Video from "react-native-video";
@@ -19,17 +21,13 @@ const ForgotPasswordScreen = ({ navigation }) => {
     navigation.goBack();
   };
 
-  // Function to handle password reset button press
   const handlePasswordReset = async () => {
     const auth = getAuth();
     try {
-      // Check if email is not empty
       if (email) {
-        // Call Firebase authentication sendPasswordResetEmail method
         await sendPasswordResetEmail(auth, email);
         console.log("Password reset email sent successfully!");
       } else {
-        // Set error message if email is empty
         setErrorMessage("Please enter a valid email.");
       }
     } catch (error) {
@@ -37,33 +35,81 @@ const ForgotPasswordScreen = ({ navigation }) => {
     }
   };
 
+  // Add an Animated.Value to the state
+  const [backgroundScale] = useState(new Animated.Value(1));
+
+  // Create a function that starts the zoom animation loop
+  const startZoomAnimation = () => {
+    Animated.sequence([
+      Animated.timing(backgroundScale, {
+        toValue: 1.2,
+        duration: 10000,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backgroundScale, {
+        toValue: 1,
+        duration: 10000,
+        useNativeDriver: true,
+      }),
+    ]).start(() => startZoomAnimation());
+  };
+
+  // Start the zoom animation loop when the component mounts
+  useEffect(() => {
+    startZoomAnimation();
+  }, []);
+
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Video
-        source={{
-          uri: "https://arusimagesforsite.s3.us-west-2.amazonaws.com/dji_fly_20230320_161050_292_1679365586817_video.MP4",
-        }}
-        resizeMode="cover"
-        style={styles.backgroundVideo}
-        repeat
-        muted
-      />
+    <View style={styles.container}>
+      <Animated.View
+        style={[
+          styles.backgroundImageContainer,
+          {
+            transform: [
+              {
+                scale: backgroundScale,
+              },
+            ],
+          },
+        ]}
+      >
+        <ImageBackground
+          source={{
+            uri: "https://cdn.midjourney.com/0f6c8ea5-e20d-4e18-981a-6cca5928deda/0_3.png",
+          }}
+          resizeMode="cover"
+          style={styles.backgroundImage}
+        />
+      </Animated.View>
+
       <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
         <Icon name="arrow-back" size={30} color="white" />
       </TouchableOpacity>
-      {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-      <TextInput
-        placeholder="Email"
-        style={{ padding: 10, borderBottomWidth: 1, width: "80%" }}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TouchableOpacity
-        style={{ padding: 10, marginTop: 20 }}
-        onPress={handlePasswordReset}
-      >
-        <Text style={{ color: "black" }}>Reset Password</Text>
-      </TouchableOpacity>
+      <View style={styles.formContainer}>
+        {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+        <TextInput
+          placeholder="Email"
+          style={styles.input}
+          placeholderTextColor="gray"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TouchableOpacity
+          style={{
+            width: "100%",
+            backgroundColor: "#252526",
+            borderRadius: 34,
+            padding: 24,
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 0,
+            marginTop: 20,
+          }}
+          onPress={handlePasswordReset}
+        >
+          <Text style={{ color: "white" }}>Reset Password</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -74,34 +120,44 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
+
+  input: {
+    padding: 24,
+    paddingLeft: 15,
+    paddingRight: 15,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 34,
+    width: "100%",
+    marginBottom: 15,
+    color: "black",
+    marginTop: 50,
   },
-  button: {
-    // backgroundColor: "blue",
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  buttonText: {
-    // color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  backgroundVideo: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-    opacity: 0.4,
+  backgroundImage: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
   },
   backButton: {
+    backgroundColor: "#252526",
+    borderRadius: 40,
+    padding: 24,
     position: "absolute",
     top: 80, // Adjust the value according to your preference
     left: 20, // Adjust the value according to your preference
+  },
+
+  backgroundImageContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "black",
+  },
+  formContainer: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

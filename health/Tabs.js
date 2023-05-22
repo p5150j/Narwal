@@ -6,7 +6,7 @@ import HomeScreen from "./screens/HomeScreen";
 import FeedScreen from "./screens/FeedScreen";
 import ForYouScreen from "./screens/ForYouScreen";
 import SettingsScreen from "./screens/SettingsScreen";
-import ProfileScreen from "./ProfileScreen";
+import ProfileScreen from "./screens/ProfileScreen";
 import MakePostScreen from "./screens/MakePostScreen";
 import Icon from "react-native-vector-icons/Ionicons";
 

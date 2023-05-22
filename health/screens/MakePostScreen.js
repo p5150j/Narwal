@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   Easing,
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { app, db, storage, auth } from "../firebase";
@@ -24,10 +26,38 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { v4 as uuidv4 } from "uuid";
 import Video from "react-native-video";
+import HapticFeedback from "react-native-haptic-feedback";
+import { launchImageLibrary } from "react-native-image-picker";
 
 const { height: screenHeight } = Dimensions.get("window");
 
 const MakePostScreen = () => {
+  const pickVideo = () => {
+    const options = {
+      mediaType: "video",
+      quality: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
+      console.log(response); // printing the whole response
+
+      if (response.didCancel) {
+        console.log("User cancelled video picker");
+      } else if (response.error) {
+        console.log("ImagePicker Error: ", response.error);
+      } else if (response.assets && response.assets.length > 0) {
+        // Video was selected
+        const source = response.assets[0].uri;
+        if (source && source !== "") {
+          setVideoUri(source); // using the existing setVideoUri
+          setShowVideoPreview(true);
+        } else {
+          console.warn("Video source is empty");
+        }
+      }
+    });
+  };
+
   const [isLoading, setIsLoading] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -42,10 +72,43 @@ const MakePostScreen = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const postContainerAnim = useRef(new Animated.Value(-screenHeight)).current;
 
+  const scale = useRef(new Animated.Value(1)).current;
+
+  const [isLoadingSelected, setIsLoadingSelected] = useState(false);
+
+  useEffect(() => {
+    if (isLoading) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.4,
+            duration: 1000,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 1000,
+            easing: Easing.linear,
+            useNativeDriver: true,
+          }),
+        ]),
+        { iterations: -1 }
+      ).start();
+    } else {
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 0,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [isLoading]);
+
   const handleRecordButtonPress = async () => {
     try {
       if (cameraRef.current) {
         setIsLoading(true);
+        HapticFeedback.trigger("impactLight");
         const options = {
           quality: RNCamera.Constants.VideoQuality.high,
           maxDuration: 60,
@@ -91,7 +154,6 @@ const MakePostScreen = () => {
         setDescription("");
         setShowFormOverlay(false);
         setShowVideoPreview(false);
-        navigation.navigate("Home");
       } else {
         console.log("Video, name, or description is missing");
       }
@@ -100,6 +162,7 @@ const MakePostScreen = () => {
       console.log("Video URI:", videoUri);
     } finally {
       setIsLoading(false);
+      navigation.navigate("Home");
     }
   };
 
@@ -147,7 +210,11 @@ const MakePostScreen = () => {
       uid,
     };
     const postsCollectionRef = collection(db, "posts");
-    await addDoc(postsCollectionRef, newPost);
+    const docRef = await addDoc(postsCollectionRef, newPost); // Now docRef is the reference to the new document
+
+    // Create a "likes" sub-collection for the new post
+    const likesCollectionRef = collection(docRef, "likes");
+    console.log('Created a "likes" sub-collection for the post', docRef.id);
   };
 
   const toggleCameraType = () => {
@@ -165,6 +232,10 @@ const MakePostScreen = () => {
 
   const handleAccept = () => {
     setShowFormOverlay(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowFormOverlay(false);
   };
 
   return (
@@ -192,6 +263,7 @@ const MakePostScreen = () => {
           </TouchableOpacity>
         </>
       )}
+
       {showVideoPreview && (
         <View style={styles.videoPreview}>
           <Video
@@ -225,17 +297,25 @@ const MakePostScreen = () => {
         {!showVideoPreview && (
           <View style={styles.cameraControls}>
             <TouchableOpacity
-              style={styles.recordButton}
-              onPress={
-                isLoading ? handleStopButtonPress : handleRecordButtonPress
-              }
+              style={styles.pickVideoButton}
+              onPress={pickVideo}
             >
-              <Icon
-                name={isLoading ? "stop" : "videocam"}
-                size={30}
-                color="#fff"
-              />
+              {/* <Text style={styles.buttonText}>Pick Video</Text> */}
+              <Icon name="albums-outline" size={60} color="#fff" />
             </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale }] }}>
+              <TouchableOpacity
+                style={[
+                  styles.recordButton,
+                  isLoading ? styles.recording : styles.notRecording,
+                ]}
+                onPress={
+                  isLoading ? handleStopButtonPress : handleRecordButtonPress
+                }
+              >
+                {isLoading && <Icon name="stop" size={30} color="#fff" />}
+              </TouchableOpacity>
+            </Animated.View>
           </View>
         )}
 
@@ -250,6 +330,12 @@ const MakePostScreen = () => {
         ) : (
           showFormOverlay && (
             <View style={styles.postContainer}>
+              <TouchableOpacity
+                style={styles.discardButton}
+                onPress={handleCloseForm}
+              >
+                <Icon name="close-outline" size={40} color="#fff" />
+              </TouchableOpacity>
               {/* <Text style={styles.inputLabel}>Name</Text> */}
               <TextInput
                 style={styles.nameInput}
@@ -270,7 +356,7 @@ const MakePostScreen = () => {
                 style={styles.postButton}
                 onPress={handlePostButtonPress}
               >
-                <Text style={styles.postButtonText}>Upload Post 🚀</Text>
+                <Text style={styles.postButtonText}>Upload</Text>
               </TouchableOpacity>
             </View>
           )
@@ -294,7 +380,7 @@ const styles = StyleSheet.create({
   videoPreview: {
     flex: 1,
     width: "100%",
-    top: 20,
+    top: 100,
     position: "absolute", // Add this line
   },
 
@@ -312,13 +398,13 @@ const styles = StyleSheet.create({
     bottom: 100,
     left: 0,
     right: 0,
-    // padding: 16,
+    // padding: 12,
   },
   cameraControls: {
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
+    marginBottom: 46,
   },
   recordButton: {
     width: 64,
@@ -327,10 +413,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#ff0000",
     justifyContent: "center",
     alignItems: "center",
+    opacity: 0.8,
   },
+
+  notRecording: {
+    backgroundColor: "#ff0000",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  recording: {
+    backgroundColor: "#ff0000",
+    // borderWidth: 2,
+    // borderColor: "#fff",
+  },
+
   postContainer: {
-    marginBottom: -100,
-    backgroundColor: "#3a3a3b",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 22,
+
+    backgroundColor: "#d3d3d3",
+    // backgroundColor: "#3a3a3b",
     borderRadius: 34,
     padding: 16,
   },
@@ -342,37 +446,36 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   nameInput: {
+    padding: 24,
+    paddingLeft: 15,
+    paddingRight: 15,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 34,
     width: "100%",
-    height: 40,
-    borderBottomWidth: 1,
-    borderRadius: 8,
-    borderColor: "#505051",
-    borderStyle: "solid",
-    paddingHorizontal: 8,
-    marginBottom: 12,
-    marginTop: 20,
-    color: "#e9e9e9",
+    marginBottom: 15,
+    color: "black",
+    marginTop: 50,
   },
   descriptionInput: {
+    padding: 24,
+    paddingLeft: 15,
+    paddingRight: 15,
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    borderRadius: 34,
     width: "100%",
-    height: 100,
-    borderBottomWidth: 1,
-    borderRadius: 8,
-    borderColor: "#505051",
-    borderStyle: "solid",
-    paddingHorizontal: 8,
-    textAlignVertical: "top",
-    marginBottom: 0,
-    color: "#e9e9e9",
+    marginBottom: 15,
+    color: "black",
+    marginTop: 50,
   },
   postButton: {
     backgroundColor: "#252526",
     borderRadius: 34,
-    padding: 16,
+    padding: 24,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 120,
     marginTop: 50,
+    width: "100%",
   },
   postButtonText: {
     color: "#bdbdbd",
@@ -381,6 +484,12 @@ const styles = StyleSheet.create({
   switchCameraButton: {
     position: "absolute",
     top: 55,
+    right: 30,
+  },
+
+  pickVideoButton: {
+    position: "absolute",
+    top: 0,
     right: 30,
   },
   discardButton: {
