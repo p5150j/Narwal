@@ -32,7 +32,7 @@ In the end, this app platform becomes not just a platform, but a movement—a mo
 
 - [Installation & Setup](#installation--setup)
 - [Firebase.js](#firebasejs)
-- [HomeScreen.js] (#homescreenjs)
+- [HomeScreen.js](#homescreenjs)
 - [ActionBar.js](#actionbarjs) (comments, user avatar, likes)
 - [Comments.js](#commentsjs)
 - [MakePostScreen.js](#commentsjs) (video recording/upload post)
