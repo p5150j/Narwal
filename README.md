@@ -101,7 +101,7 @@ export { app, db, storage, auth };
 
 
 
-### `HomeScreen.js`
+### [`HomeScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/HomeScreen.js)
 The HomeScreen component is the main screen users interact with when using the app. It retrieves and displays the posts from the Firestore database. It includes video playback for both posts and ads and handles their logic. It also provides the ability to switch between two feeds: "Curated" and "Discover".
 
 ##### Here are the key elements of the HomeScreen component:
