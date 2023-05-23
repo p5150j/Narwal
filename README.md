@@ -146,7 +146,7 @@ This function is triggered when the viewable items in the FlatList change. It se
 
 A modal is used for displaying comments for the currently selected post.
 
-### `ActionBar.js`
+### [`ActionBar.js`](https://github.com/p5150j/Narwal/blob/main/mobile/components/ActionBar.js)
 
 This ActionBar component is a functional component written in React that uses hooks to manage state and effects. It allows users to interact with posts, providing functionality to like, comment, and view the author's profile. Firebase Firestore is used for data management.
 
@@ -198,7 +198,7 @@ The `handleAvatarClick` function allows for navigation to the author's profile w
 The component returns a View component containing `TouchableOpacity` components. Each of these wraps a clickable part of the action bar - the avatar, like button, and comment button. They each have their own `onPress` functions, and the like and comment buttons also display the current count of likes and comments.
 
 
-### `Comments.js`
+### [`Comments.js`](https://github.com/p5150j/Narwal/blob/main/mobile/components/Comments.js)
 
 
 This is a React Native component for handling comments on a post. Let's break down what this component does.
@@ -220,7 +220,7 @@ This is a React Native component for handling comments on a post. Let's break do
 This component uses Firebase for data persistence and real-time updates, which allows the comments to update in real time for all users whenever a new comment is added or an existing comment is modified or removed.
 
 
-### `MakePostScreen.js`
+### [`MakePostScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/MakePostScreen.js)
 
 This is a React Native code file for a component named MakePostScreen. The code uses Firebase for backend services and several libraries for different functionalities. Below is a high-level breakdown of what this component does:
 
@@ -245,7 +245,7 @@ This is a React Native code file for a component named MakePostScreen. The code 
 
 In summary, this is a video sharing screen where users can record or select a video, provide a name and description, and then upload the video to Firebase Storage. The metadata (video URL, name, description) is stored in Firestore as a post. Users can switch between front and back cameras and see a preview of the video before uploading. It also provides visual feedback about the progress of the upload and includes haptic feedback when recording starts.
 
-### `UserListScreen.js`
+### [`UserListScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/UserListScreen.js)
 
 This code defines a UserListScreen component for a React Native application that utilizes Firebase as its backend. The screen fetches and displays users and posts from a Firestore database, and provides functionality for searching these users and posts.
 
@@ -284,7 +284,7 @@ The component returns a view that contains a close button, a heading, a search i
 
 
 
-### `LoginScreen.js`
+### [`LoginScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/LoginScreen.js)
 
 
 This is the code for a LoginScreen component in a React Native application. It makes use of several key concepts such as state management, side-effects via useEffect, Firebase Authentication, React Navigation and animation.
@@ -305,7 +305,7 @@ Here's a breakdown:
 That's the overview of this LoginScreen component! It includes some fundamental React Native concepts, which makes it a pretty common type of screen you'll see in many mobile applications.
 
 
-### `RegisterScreen.js`
+### [`RegisterScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/RegisterScreen.js)
 
 This is a RegisterScreen component for a React Native application. It's well structured and follows the best practices for managing state and handling user interactions in a React component.
 
@@ -326,7 +326,7 @@ Here's what it does:
 - It also handles and displays error messages appropriately in case of registration failures.
 
 
-### `Serverless ML functions/index.js`
+### [`Serverless ML functions/index.js`](https://github.com/p5150j/Narwal/blob/main/functions/index.js)
 
 This script sets up several Firebase Cloud Functions for moderating content within a Firebase Firestore database for an application. The functions use the Google Cloud Language, Perspective API, and Video Intelligence API for content moderation.
 
@@ -353,7 +353,7 @@ Let's break down the significant parts:
 
 Overall, this script implements a content moderation system that automatically scans and moderates user posts and comments in real-time. It uses Google's machine learning APIs for text and video content analysis.
 
-### Advertisement admin `web-admin/Ads.js`
+### [Advertisement admin `web-admin/Ads.js`](https://github.com/p5150j/Narwal/blob/main/web-admin/the-admin/src/Ads.js)
 
 This is a React component named Ads, which uses Firebase Firestore and Firebase Storage to store, retrieve, update, and delete advertisements. The script also includes Firebase Hooks like useState and useEffect.
 
@@ -379,7 +379,7 @@ Here's a detailed explanation:
 
 - If loading is true, the component shows a loading message. If loading is false, it either shows the form and the list of ads (if any exist), or just the form (if no ads exist).
 
-### Manual content mediation `web-admin/Items.js`
+### [Manual content mediation `web-admin/Items.js`](https://github.com/p5150j/Narwal/blob/main/web-admin/the-admin/src/Items.js)
 
 This is a React component named Items that uses Firebase Firestore for data storage and Firebase Storage for file storage (images and videos). It allows users to add, view, and delete posts. The component uses several hooks for managing state and side effects.
 
