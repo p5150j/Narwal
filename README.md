@@ -30,6 +30,19 @@ As this story continues to unfold, the hope is more users flock to this platform
 
 In the end, this app platform becomes not just a platform, but a movement—a movement that empowers individuals to reclaim their digital identities and create a world where their voices are heard, their data is respected, and their communities thrive. 
 
+- [Installation & Setup](#installation--setup)
+- [Firebase.js](#firebasejs)
+- [HomeScreen.js] (#homescreenjs)
+- [ActionBar.js](#actionbarjs) (comments, user avatar, likes)
+- [Comments.js](#commentsjs)
+- [MakePostScreen.js](#commentsjs) (video recording/upload post)
+- [UserListScreen.js](#userlistscreenjs) (user and content serach)
+- [LoginScreen.js](#loginscreenjs)
+- [RegisterScreen.js](#registerscreenjs)
+- [Serverless ML functions/index.js](#serverless-ml-functionsindexjs)
+- [Advertisement admin `web-admin/Ads.js`](#advertisement-admin-web-adminadsjs)
+- [Manual content mediation `web-admin/Items.js`](#manual-content-mediation-web-adminitemsjs)
+
 
 ## Installation & Setup
 Instructions on how to clone and run the project
