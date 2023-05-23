@@ -128,7 +128,7 @@ This component contains several state variables for storing posts, ads, viewable
 
 `useEffect`
 
-`useEffect` hooks are used for side effects. The first one is for fetching followed users and initializing the in-app purchases SDK. The second is for setting up Firestore listeners for retrieving posts and ads. The third is for preparing data with ads whenever posts or ads change. The last one resets the ad playing status when the current ad index changes.
+`useEffect` hooks are used for side effects. The first one is for fetching followed users and initializing the `in-app purchases` SDK. The second is for setting up Firestore listeners for retrieving posts and ads. The third is for preparing data with ads whenever posts or ads change. The last one resets the ad playing status when the current ad index changes. Currently ads are configurable and take a number (_eg: play an add every 12 content scrolls_). 
 
 `PostVideo Component`
 
