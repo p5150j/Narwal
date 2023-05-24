@@ -230,7 +230,7 @@ This is a React Native code file for a component named MakePostScreen. The code 
 
 - Video Selection: The `pickVideo` function allows users to select a video from their device library.
 
-- Video Recording: The handleRecordButtonPress and handleStopButtonPress functions control the start and stop recording functionalities. `handleRecordButtonPress` starts the recording, and `handleStopButtonPress` stops it.
+- Video Recording: The `handleRecordButtonPress` and `handleStopButtonPress` functions control the start and stop recording functionalities. `handleRecordButtonPress` starts the recording, and `handleStopButtonPress` stops it.
 
 - Post Creation: The `handlePostButtonPress` function controls what happens when the user tries to post their video. It validates the presence of a video, `name, and description`, uploads the video to Firebase Storage, and then creates a post in the Firestore database with the video's `download URL`, the name, and the description. It also resets state variables to their initial state and navigates back to the home screen after successful post creation.
 
