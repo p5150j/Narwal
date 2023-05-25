@@ -56,6 +56,7 @@ Mobile-
 - Open the `xcworkspace` file and sign with your Apple creds
 - Add In `in app purchases`
 - Build and Run on Device connected with USB
+- Might need to clear watchman out if youve been tesing alot `watchman watch-del '/path/dev/to/this/dir' ; watchman watch-project '/path/dev/to/this/dir'`
 - Need to get docs for Android (_this in a react native app so should be easy_)
 
 Web Admin
