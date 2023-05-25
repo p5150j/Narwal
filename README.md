@@ -56,7 +56,6 @@ Mobile-
 - Open the `xcworkspace` file and sign with your Apple creds
 - Add In `in app purchases`
 - Build and Run on Device connected with USB
-- Might need to clear watchman out if youve been tesing alot `watchman watch-del '/path/dev/to/this/dir' ; watchman watch-project '/path/dev/to/this/dir'`
 - Need to get docs for Android (_this in a react native app so should be easy_)
 
 Web Admin
@@ -406,7 +405,9 @@ Rendering: The component renders a form for adding a new post and a list of exis
 
 
 ## Usage
-- How to use the project, tips, and examples
+### iOS Xcode
+- Might need to clear watchman out if youve been tesing alot `watchman watch-del '/path/dev/to/this/dir' ; watchman watch-project '/path/dev/to/this/dir'`
+- Sometimes you might need to manually clean out your "DerivedData" `/Users/dev/Library/Developer/Xcode/DerivedData/ModuleCache.noindex` and or nuke the project folders for the app in `Xcode/DerivedData` 
 
 ## Contributing
 - Guidelines for contributions
