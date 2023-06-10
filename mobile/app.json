@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "midhealth",
+    "name": "narwal",
     "slug": "arus",
     "version": "1.2.0",
     "orientation": "portrait",
@@ -11,12 +11,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.midhealth.arus",
+      "bundleIdentifier": "com.narwal.arus",
       "buildNumber": "1.0.3"
     },
     "web": {
@@ -29,7 +27,7 @@
     },
     "owner": "arus",
     "android": {
-      "package": "com.midhealth.arus"
+      "package": "com.narwal.arus"
     }
   }
 }

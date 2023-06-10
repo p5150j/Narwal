@@ -49,12 +49,14 @@ Instructions on how to clone and run the project
 
 Mobile-
 - Clone this repository to your local machine using git clone.
+- cd into `/mobile`
+- `touch firebase.js` and see [Firebase.js](#firebasejs) section for config
 - Install the dependencies by running `npm install`.
 - Start the application using `expo start`.
 - Build for iOS `expo prebuild --platform ios`
 - Make the `main.jsbundle` that xcode needs  `react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios' --assets-dest='./ios'`
-- Open the `xcworkspace` file and sign with your Apple creds
-- Add In `in app purchases`
+- Open the `xcworkspace` file go to Signing and Capabilities and sign with your Apple creds
+- Add In `in app purchases` as a Capabilities
 - Build and Run on Device connected with USB
 - Need to get docs for Android (_this in a react native app so should be easy_)
 
@@ -97,8 +99,6 @@ const auth = getAuth(app);
 
 export { app, db, storage, auth };
 ```
-
-
 
 
 ### [`HomeScreen.js`](https://github.com/p5150j/Narwal/blob/main/mobile/screens/HomeScreen.js)

@@ -6356,10 +6356,10 @@
     "lodash" "^4.17.21"
     "prop-types" "^15.7.2"
 
-"react-native-gradle-plugin@^0.71.17":
-  "integrity" "sha512-OXXYgpISEqERwjSlaCiaQY6cTY5CH6j73gdkWpK0hedxtiWMWgH+i5TOi4hIGYitm9kQBeyDu+wim9fA8ROFJA=="
-  "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.17.tgz"
-  "version" "0.71.17"
+"react-native-gradle-plugin@^0.71.18":
+  "integrity" "sha512-1dVk9NwhoyKHCSxcrM6vY6cxmojeATsBobDicX0ZKr7DgUF2cBQRTKsimQFvzH8XhOVXyH8p4HyDSZNIFI8OlQ=="
+  "resolved" "https://registry.npmjs.org/react-native-gradle-plugin/-/react-native-gradle-plugin-0.71.19.tgz"
+  "version" "0.71.19"
 
 "react-native-haptic-feedback@^2.0.3":
   "integrity" "sha512-7+qvcxXZts/hA+HOOIFyM1x9m9fn/TJVSTgXaoQ8uT4gLc97IMvqHQ559tDmnlth+hHMzd3HRMpmRLWoKPL0DA=="
@@ -6426,10 +6426,10 @@
     "prop-types" "^15.7.2"
     "shaka-player" "^2.5.9"
 
-"react-native@*", "react-native@>= 0.58.2", "react-native@>=0.46.0", "react-native@>=0.50.0", "react-native@>=0.59", "react-native@>=0.60.0", "react-native@0.71.7":
-  "integrity" "sha512-Id6iRLS581fJMFGbBl1jP5uSmjExtGOvw5Gvh7694zISXjsRAsFMmU+izs0pyCLqDBoHK7y4BT7WGPGw693nYw=="
-  "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.71.7.tgz"
-  "version" "0.71.7"
+"react-native@*", "react-native@>= 0.58.2", "react-native@>=0.46.0", "react-native@>=0.50.0", "react-native@>=0.59", "react-native@>=0.60.0", "react-native@0.71.8":
+  "integrity" "sha512-ftMAuhpgTkbHU9brrqsEyxcNrpYvXKeATY+if22Nfhhg1zW+6wn95w9otwTnA3xHkljPCbng8mUhmmERjGEl7g=="
+  "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.71.8.tgz"
+  "version" "0.71.8"
   dependencies:
     "@jest/create-cache-key-function" "^29.2.1"
     "@react-native-community/cli" "10.2.2"
@@ -6456,7 +6456,7 @@
     "promise" "^8.3.0"
     "react-devtools-core" "^4.26.1"
     "react-native-codegen" "^0.71.5"
-    "react-native-gradle-plugin" "^0.71.17"
+    "react-native-gradle-plugin" "^0.71.18"
     "react-refresh" "^0.4.0"
     "react-shallow-renderer" "^16.15.0"
     "regenerator-runtime" "^0.13.2"
