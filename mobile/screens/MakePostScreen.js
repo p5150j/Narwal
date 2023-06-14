@@ -11,6 +11,8 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { RNCamera } from "react-native-camera";
 import { app, db, storage, auth } from "../firebase";
@@ -329,36 +331,38 @@ const MakePostScreen = () => {
           </View>
         ) : (
           showFormOverlay && (
-            <View style={styles.postContainer}>
-              <TouchableOpacity
-                style={styles.discardButton}
-                onPress={handleCloseForm}
-              >
-                <Icon name="close-outline" size={40} color="#fff" />
-              </TouchableOpacity>
-              {/* <Text style={styles.inputLabel}>Name</Text> */}
-              <TextInput
-                style={styles.nameInput}
-                placeholder="Enter name"
-                placeholderTextColor="#aaa"
-                value={name}
-                onChangeText={(text) => setName(text)}
-              />
-              {/* <Text style={styles.inputLabel}>Description</Text> */}
-              <TextInput
-                style={styles.descriptionInput}
-                placeholder="Enter description"
-                placeholderTextColor="#aaa"
-                value={description}
-                onChangeText={(text) => setDescription(text)}
-              />
-              <TouchableOpacity
-                style={styles.postButton}
-                onPress={handlePostButtonPress}
-              >
-                <Text style={styles.postButtonText}>Upload</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+              <View style={styles.postContainer}>
+                <TouchableOpacity
+                  style={styles.discardButton}
+                  onPress={handleCloseForm}
+                >
+                  <Icon name="close-outline" size={40} color="#fff" />
+                </TouchableOpacity>
+                {/* <Text style={styles.inputLabel}>Name</Text> */}
+                <TextInput
+                  style={styles.nameInput}
+                  placeholder="Enter name"
+                  placeholderTextColor="#aaa"
+                  value={name}
+                  onChangeText={(text) => setName(text)}
+                />
+                {/* <Text style={styles.inputLabel}>Description</Text> */}
+                <TextInput
+                  style={styles.descriptionInput}
+                  placeholder="Enter description"
+                  placeholderTextColor="#aaa"
+                  value={description}
+                  onChangeText={(text) => setDescription(text)}
+                />
+                <TouchableOpacity
+                  style={styles.postButton}
+                  onPress={handlePostButtonPress}
+                >
+                  <Text style={styles.postButtonText}>Upload</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
           )
         )}
       </View>

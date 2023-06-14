@@ -7,6 +7,8 @@ import {
   StyleSheet,
   ImageBackground,
   Animated,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
@@ -80,78 +82,80 @@ const RegisterScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.backgroundImageContainer,
-          {
-            transform: [
-              {
-                scale: backgroundScale,
-              },
-            ],
-          },
-        ]}
-      >
-        <ImageBackground
-          source={{
-            uri: "https://cdn.midjourney.com/b24c5210-e262-4bec-a952-e09b58784c18/0_0.png",
-          }}
-          resizeMode="cover"
-          style={styles.backgroundImage}
-        />
-      </Animated.View>
-      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Icon name="arrow-back" size={30} color="white" />
-      </TouchableOpacity>
-      <View style={styles.formContainer}>
-        {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          placeholderTextColor="gray"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput // Add a new TextInput field for the name
-          style={styles.input}
-          placeholder="Name"
-          placeholderTextColor="gray"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-        />
-        <TextInput // Add a new TextInput field for the handle
-          style={styles.input}
-          placeholder="@Handle"
-          placeholderTextColor="gray"
-          value={handle}
-          onChangeText={setHandle}
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry
-          placeholderTextColor="gray"
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity
-          style={styles.registerButton}
-          onPress={handleRegister}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Animated.View
+          style={[
+            styles.backgroundImageContainer,
+            {
+              transform: [
+                {
+                  scale: backgroundScale,
+                },
+              ],
+            },
+          ]}
         >
-          <Text style={{ color: "white" }}>Register</Text>
+          <ImageBackground
+            source={{
+              uri: "https://cdn.midjourney.com/b24c5210-e262-4bec-a952-e09b58784c18/0_0.png",
+            }}
+            resizeMode="cover"
+            style={styles.backgroundImage}
+          />
+        </Animated.View>
+        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+          <Icon name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Login")}>
-          <Text style={{ marginTop: 20, color: "white" }}>
-            Already have an account? Login
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.formContainer}>
+          {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            placeholderTextColor="gray"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TextInput // Add a new TextInput field for the name
+            style={styles.input}
+            placeholder="Name"
+            placeholderTextColor="gray"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+          />
+          <TextInput // Add a new TextInput field for the handle
+            style={styles.input}
+            placeholder="@Handle"
+            placeholderTextColor="gray"
+            value={handle}
+            onChangeText={setHandle}
+            autoCapitalize="none"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Password"
+            secureTextEntry
+            placeholderTextColor="gray"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            style={styles.registerButton}
+            onPress={handleRegister}
+          >
+            <Text style={{ color: "white" }}>Register</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <Text style={{ marginTop: 20, color: "white" }}>
+              Already have an account? Login
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

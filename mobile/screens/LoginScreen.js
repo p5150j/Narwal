@@ -7,6 +7,8 @@ import {
   StyleSheet,
   ImageBackground,
   Animated,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigation } from "@react-navigation/native";
@@ -68,75 +70,77 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Animated.View
-        style={[
-          styles.backgroundImageContainer,
-          {
-            transform: [
-              {
-                scale: backgroundScale,
-              },
-            ],
-          },
-        ]}
-      >
-        <ImageBackground
-          source={{
-            uri: "https://cdn.midjourney.com/abbe3e25-f891-461a-a354-56afa58c2f93/0_2.png",
-          }}
-          resizeMode="cover"
-          style={styles.backgroundImage}
-        />
-      </Animated.View>
-
-      <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
-        <Icon name="arrow-back" size={30} color="white" />
-      </TouchableOpacity>
-      <View style={styles.formContainer}>
-        {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
-        <TextInput
-          placeholder="Email"
-          style={styles.input}
-          placeholderTextColor="gray"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          placeholder="Password"
-          secureTextEntry
-          style={styles.input}
-          placeholderTextColor="gray"
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TouchableOpacity
-          style={{
-            width: "100%",
-            backgroundColor: "#252526",
-            borderRadius: 34,
-            padding: 24,
-            justifyContent: "center",
-            alignItems: "center",
-            marginBottom: 0,
-            marginTop: 20,
-          }}
-          onPress={handleLogin}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Animated.View
+          style={[
+            styles.backgroundImageContainer,
+            {
+              transform: [
+                {
+                  scale: backgroundScale,
+                },
+              ],
+            },
+          ]}
         >
-          <Text style={{ color: "white" }}>Login</Text>
+          <ImageBackground
+            source={{
+              uri: "https://cdn.midjourney.com/abbe3e25-f891-461a-a354-56afa58c2f93/0_2.png",
+            }}
+            resizeMode="cover"
+            style={styles.backgroundImage}
+          />
+        </Animated.View>
+
+        <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
+          <Icon name="arrow-back" size={30} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleForgotPassword}>
-          <Text style={{ marginTop: 20, color: "white" }}>
-            Forgot Password?
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("Register")}>
-          <Text style={{ marginTop: 20, color: "white" }}>
-            Don't have an account? Register
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.formContainer}>
+          {errorMessage && <Text style={{ color: "red" }}>{errorMessage}</Text>}
+          <TextInput
+            placeholder="Email"
+            style={styles.input}
+            placeholderTextColor="gray"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            placeholder="Password"
+            secureTextEntry
+            style={styles.input}
+            placeholderTextColor="gray"
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TouchableOpacity
+            style={{
+              width: "100%",
+              backgroundColor: "#252526",
+              borderRadius: 34,
+              padding: 24,
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 0,
+              marginTop: 20,
+            }}
+            onPress={handleLogin}
+          >
+            <Text style={{ color: "white" }}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleForgotPassword}>
+            <Text style={{ marginTop: 20, color: "white" }}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.navigate("Register")}>
+            <Text style={{ marginTop: 20, color: "white" }}>
+              Don't have an account? Register
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 
